@@ -5,7 +5,6 @@ import { findPokemon, serializePokemon } from '@/utils/apiHelpers';
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
   const { name } = req.query;
-
   if (!name) {
     res.status(400).send('You must provide a name in order to find a pokemon');
     return;

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -9,12 +9,13 @@ import { Chip } from '@/components/Chip';
 import { Container } from '@/components/Container';
 import { Spinner } from '@/components/Spinner';
 import { fadeInUp, stagger } from '@/utils/animations';
+import { SerializedPokemon } from '@/types';
 
 const Pokemon: React.FC = () => {
   const { query, isReady } = useRouter();
-  const { data: response, error } = useSWR(
+  const { data: response, error } = useSWR<AxiosResponse<SerializedPokemon>>(
     isReady ? `/api/pokemons/${query.name || ''}` : null,
-    axios,
+    () => axios(`/api/pokemons/${query.name}`),
   );
 
   if (error) {
@@ -29,7 +30,7 @@ const Pokemon: React.FC = () => {
     <>
       <Head>
         <title>
-          Pokemon | {response?.data?.name.english ? response?.data.name.english : 'Pokemon Details'}
+          Pokemon | {response?.data?.name || 'Pokemon Details'}
         </title>
       </Head>
       <Container>
@@ -38,19 +39,19 @@ const Pokemon: React.FC = () => {
             <Link href="/">← Back</Link>
           </header>
 
-          {response.data ? (
+          {response?.data ? (
             <div className="flex flex-col items-center">
               {/* Image */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 className="w-80 h-80 border-slate-300 border p-2 bg-white rounded-lg drop-shadow-2xl"
                 src={response.data.image}
-                alt={response.data.name.english}
-                aria-label={response.data.name.english}
+                alt={response.data.name}
+                aria-label={response.data.name}
               />
 
               {/* Name */}
-              <div className="text-2xl my-10">{response.data.name.english}</div>
+              <div className="text-2xl my-10">{response.data.name}</div>
 
               {/* Stats */}
               <motion.div className="max-w-md w-full" variants={stagger(0.08)}>

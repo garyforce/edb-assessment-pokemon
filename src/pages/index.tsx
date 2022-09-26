@@ -18,7 +18,7 @@ const Home = ({ version }: { version: string }) => {
   const [view, setView] = useState<Views>('cards');
 
   const { data: response } = useSWR<AxiosResponse<SerializedPokemon[]>>(`pokemons-${search}`, () =>
-    axios(`/api/pokemons`),
+    axios(`/api/pokemons?name=${search}`),
   );
 
   const handleSearch = useCallback((event: ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +34,13 @@ const Home = ({ version }: { version: string }) => {
         </div>
       );
     }
-    return view === 'cards' ? <Cards data={response.data} /> : <Table />;
+    return view === 'cards' ? (
+      <Cards
+        data={response.data}
+      />
+    ) : (
+      <Table data={response.data} />
+    );
   };
 
   return (
